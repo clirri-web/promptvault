@@ -1,0 +1,21 @@
+﻿{% extends "base.html" %}
+{% block title %}Shared with me{% endblock %}
+{% block content %}
+
+<h1 class="mb-4">Shared with me</h1>
+
+<div class="list-group">
+  {% for prompt in prompts %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <a href="{% url 'prompt_detail' prompt.pk %}" class="fw-semibold text-decoration-none">{{ prompt.title }}</a>
+        {% if prompt.category %}<span class="badge bg-light text-dark tag ms-2">{{ prompt.category.name }}</span>{% endif %}
+        <small class="text-muted ms-2">by {{ prompt.owner.username }}</small>
+      </div>
+    </div>
+  {% empty %}
+    <div class="list-group-item">Nothing has been shared with you yet.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}
