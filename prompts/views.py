@@ -96,3 +96,12 @@ def prompt_favorite_toggle(request, pk):
     prompt.is_favorite = not prompt.is_favorite
     prompt.save()
     return redirect('prompt_detail', pk=prompt.pk)
+
+
+@login_required
+def prompt_delete(request, pk):
+    prompt = get_object_or_404(Prompt, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        prompt.delete()
+        return redirect('prompt_list')
+    return render(request, 'prompts/prompt_delete_confirm.html', {'prompt': prompt})

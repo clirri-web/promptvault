@@ -1,57 +1,44 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>My Prompts</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    a { color: #2563eb; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 10px; border-bottom: 1px solid #eee; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .filterbar { margin-bottom: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    select, input[type=text] { padding: 6px; }
-    .tag { display: inline-block; background: #eef2ff; color: #3730a3; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; }
-    button { padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .star { color: #f59e0b; }
-  </style>
-</head>
-<body>
-  <div class="topbar">
-    <h1>My Prompts</h1>
-    <a href="{% url 'logout' %}">Log out</a>
+﻿{% extends "base.html" %}
+{% block title %}My Prompts{% endblock %}
+{% block content %}
+
+<h1 class="mb-4">My Prompts</h1>
+
+<form method="get" class="row g-2 align-items-center mb-4">
+  <div class="col-auto">
+    <input type="text" name="q" class="form-control" placeholder="Search title or text..." value="{{ search_query }}">
   </div>
-
-  <p><a href="{% url 'prompt_add' %}">+ Add New Prompt</a></p>
-
-  <form method="get" class="filterbar">
-    <input type="text" name="q" placeholder="Search title or text..." value="{{ search_query }}">
-    <select name="category" onchange="this.form.submit()">
+  <div class="col-auto">
+    <select name="category" class="form-select" onchange="this.form.submit()">
       <option value="">All categories</option>
       {% for cat in categories %}
         <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
       {% endfor %}
     </select>
-    <label>
-      <input type="checkbox" name="favorites" value="1" {% if favorites_only %}checked{% endif %} onchange="this.form.submit()">
-      Favorites only
-    </label>
-    <button type="submit">Search</button>
-    <a href="{% url 'prompt_list' %}">Clear</a>
-  </form>
+  </div>
+  <div class="col-auto form-check">
+    <input type="checkbox" class="form-check-input" name="favorites" value="1" id="favCheck" {% if favorites_only %}checked{% endif %} onchange="this.form.submit()">
+    <label class="form-check-label" for="favCheck">Favorites only</label>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="{% url 'prompt_list' %}" class="btn btn-outline-secondary">Clear</a>
+  </div>
+</form>
 
-  <ul>
-    {% for prompt in prompts %}
-      <li>
-        {% if prompt.is_favorite %}<span class="star">*</span>{% endif %}
-        <a href="{% url 'prompt_detail' prompt.pk %}">{{ prompt.title }}</a>
-        {% if prompt.category %}<span class="tag">{{ prompt.category.name }}</span>{% endif %}
-        - <small>{{ prompt.created_at|date:"M d, Y" }}</small>
-      </li>
-    {% empty %}
-      <li>No prompts found.</li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
+<div class="list-group">
+  {% for prompt in prompts %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        {% if prompt.is_favorite %}<span class="text-warning">&#9733;</span>{% endif %}
+        <a href="{% url 'prompt_detail' prompt.pk %}" class="fw-semibold text-decoration-none">{{ prompt.title }}</a>
+        {% if prompt.category %}<span class="badge bg-light text-dark tag ms-2">{{ prompt.category.name }}</span>{% endif %}
+        <small class="text-muted ms-2">{{ prompt.created_at|date:"M d, Y" }}</small>
+      </div>
+    </div>
+  {% empty %}
+    <div class="list-group-item">No prompts found.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

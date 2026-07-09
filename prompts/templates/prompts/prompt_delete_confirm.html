@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+{% block title %}Delete Prompt{% endblock %}
+{% block content %}
+
+<h1 class="mb-4 text-danger">Delete Prompt</h1>
+<p>Are you sure you want to delete <strong>{{ prompt.title }}</strong>? This will also delete its notes and version history. This cannot be undone.</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Yes, delete it</button>
+  <a href="{% url 'prompt_detail' prompt.pk %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+
+{% endblock %}
