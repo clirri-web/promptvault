@@ -1,4 +1,4 @@
-﻿"""
+"""
 Django settings for promptvault_core project.
 """
 from pathlib import Path
@@ -78,4 +78,4 @@ STORAGES = {
 }
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'prompt_list'
+LOGIN_REDIRECT_URL = 'dashboard'

@@ -1,7 +1,8 @@
-﻿from django.urls import path
+from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('', views.prompt_list, name='prompt_list'),
     path('shared/', views.shared_list, name='shared_list'),
     path('add/', views.prompt_add, name='prompt_add'),
@@ -10,5 +11,8 @@ urlpatterns = [
     path('<int:pk>/delete/', views.prompt_delete, name='prompt_delete'),
     path('<int:pk>/versions/', views.prompt_versions, name='prompt_versions'),
     path('<int:pk>/favorite/', views.prompt_favorite_toggle, name='prompt_favorite_toggle'),
+    path('<int:pk>/pin/', views.prompt_pin_toggle, name='prompt_pin_toggle'),
+    path('<int:pk>/archive/', views.prompt_archive_toggle, name='prompt_archive_toggle'),
+    path('<int:pk>/duplicate/', views.prompt_duplicate, name='prompt_duplicate'),
     path('<int:pk>/share/', views.prompt_share, name='prompt_share'),
 ]

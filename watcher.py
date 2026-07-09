@@ -2,10 +2,12 @@
 PromptVault update watcher.
 Watches the incoming-updates folder for .zip files. When one appears:
   1. Extracts it over the project files
-  2. Runs migrate
-  3. Runs collectstatic
-  4. Restarts the PromptVault service
-  5. Moves the zip into incoming-updates/processed
+  2. Runs makemigrations (in case model fields changed but no migration
+     file was included in the update package)
+  3. Runs migrate
+  4. Runs collectstatic
+  5. Restarts the PromptVault service
+  6. Moves the zip into incoming-updates/processed
 If anything fails partway, the zip is renamed with a FAILED_ prefix
 and left in incoming-updates for inspection - it will not be retried
 automatically, so a failure cannot loop forever.
@@ -43,6 +45,12 @@ def process_zip(zip_path):
         with zipfile.ZipFile(zip_path, 'r') as zf:
             zf.extractall(PROJECT_DIR)
         log('Extraction complete.')
+
+        log('Checking for model changes (makemigrations)...')
+        subprocess.run(
+            [PYTHON_EXE, 'manage.py', 'makemigrations'],
+            cwd=PROJECT_DIR, check=True
+        )
 
         log('Running migrations...')
         subprocess.run(

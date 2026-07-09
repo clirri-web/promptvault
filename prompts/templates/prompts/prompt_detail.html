@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}{{ prompt.title }}{% endblock %}
 {% block content %}
 
@@ -6,8 +6,13 @@
   <div class="alert alert-info">You are viewing this prompt because it was shared with you. It is view-only.</div>
 {% endif %}
 
+{% if prompt.is_archived %}
+  <div class="alert alert-secondary">This prompt is archived.</div>
+{% endif %}
+
 <div class="d-flex justify-content-between align-items-start">
   <h1>
+    {% if prompt.is_pinned %}<span title="Pinned">&#128204;</span>{% endif %}
     {{ prompt.title }}
     {% if is_owner %}
       <a href="{% url 'prompt_favorite_toggle' prompt.pk %}" class="star-btn" title="Toggle favorite">
@@ -27,8 +32,15 @@
 <div class="mb-4">
   {% if is_owner %}
     <a href="{% url 'prompt_edit' prompt.pk %}" class="btn btn-primary btn-sm">Edit</a>
+    <a href="{% url 'prompt_duplicate' prompt.pk %}" class="btn btn-outline-primary btn-sm">Duplicate</a>
+    <a href="{% url 'prompt_pin_toggle' prompt.pk %}" class="btn btn-outline-secondary btn-sm">
+      {% if prompt.is_pinned %}Unpin{% else %}Pin{% endif %}
+    </a>
     <a href="{% url 'prompt_versions' prompt.pk %}" class="btn btn-outline-secondary btn-sm">Version History</a>
     <a href="{% url 'prompt_share' prompt.pk %}" class="btn btn-outline-success btn-sm">Share</a>
+    <a href="{% url 'prompt_archive_toggle' prompt.pk %}" class="btn btn-outline-warning btn-sm">
+      {% if prompt.is_archived %}Unarchive{% else %}Archive{% endif %}
+    </a>
     <a href="{% url 'prompt_delete' prompt.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
   {% endif %}
   <a href="{% url 'prompt_list' %}" class="btn btn-outline-secondary btn-sm">Back to list</a>
