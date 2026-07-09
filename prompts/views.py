@@ -1,13 +1,24 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Prompt
+from .models import Prompt, Category
 from .forms import PromptForm
 
 
 @login_required
 def prompt_list(request):
     prompts = Prompt.objects.filter(owner=request.user).order_by('-created_at')
-    return render(request, 'prompts/prompt_list.html', {'prompts': prompts})
+
+    category_id = request.GET.get('category')
+    if category_id:
+        prompts = prompts.filter(category_id=category_id)
+
+    categories = Category.objects.all()
+
+    return render(request, 'prompts/prompt_list.html', {
+        'prompts': prompts,
+        'categories': categories,
+        'selected_category': category_id,
+    })
 
 
 @login_required

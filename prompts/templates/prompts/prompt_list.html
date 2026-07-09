@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,6 +10,9 @@
     ul { list-style: none; padding: 0; }
     li { padding: 10px; border-bottom: 1px solid #eee; }
     .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .filterbar { margin-bottom: 16px; }
+    select { padding: 6px; }
+    .tag { display: inline-block; background: #eef2ff; color: #3730a3; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; }
   </style>
 </head>
 <body>
@@ -17,13 +20,30 @@
     <h1>My Prompts</h1>
     <a href="{% url 'logout' %}">Log out</a>
   </div>
+
   <p><a href="{% url 'prompt_add' %}">+ Add New Prompt</a></p>
+
+  <form method="get" class="filterbar">
+    <label for="category">Filter by category:</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
   <ul>
     {% for prompt in prompts %}
-      <li><a href="{% url 'prompt_detail' prompt.pk %}">{{ prompt.title }}</a> — <small>{{ prompt.created_at|date:"M d, Y" }}</small></li>
+      <li>
+        <a href="{% url 'prompt_detail' prompt.pk %}">{{ prompt.title }}</a>
+        {% if prompt.category %}<span class="tag">{{ prompt.category.name }}</span>{% endif %}
+        - <small>{{ prompt.created_at|date:"M d, Y" }}</small>}</small>
+      </li>
     {% empty %}
       <li>No prompts yet. Click "Add New Prompt" to create your first one.</li>
     {% endfor %}
   </ul>
 </body>
 </html>
+
