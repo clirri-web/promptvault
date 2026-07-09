@@ -10,9 +10,10 @@
     ul { list-style: none; padding: 0; }
     li { padding: 10px; border-bottom: 1px solid #eee; }
     .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .filterbar { margin-bottom: 16px; }
-    select { padding: 6px; }
+    .filterbar { margin-bottom: 16px; display: flex; gap: 12px; align-items: center; }
+    select, input[type=text] { padding: 6px; }
     .tag { display: inline-block; background: #eef2ff; color: #3730a3; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; }
+    button { padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -24,13 +25,15 @@
   <p><a href="{% url 'prompt_add' %}">+ Add New Prompt</a></p>
 
   <form method="get" class="filterbar">
-    <label for="category">Filter by category:</label>
-    <select name="category" id="category" onchange="this.form.submit()">
+    <input type="text" name="q" placeholder="Search title or text..." value="{{ search_query }}">
+    <select name="category" onchange="this.form.submit()">
       <option value="">All categories</option>
       {% for cat in categories %}
         <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
       {% endfor %}
     </select>
+    <button type="submit">Search</button>
+    <a href="{% url 'prompt_list' %}">Clear</a>
   </form>
 
   <ul>
@@ -38,12 +41,11 @@
       <li>
         <a href="{% url 'prompt_detail' prompt.pk %}">{{ prompt.title }}</a>
         {% if prompt.category %}<span class="tag">{{ prompt.category.name }}</span>{% endif %}
-        - <small>{{ prompt.created_at|date:"M d, Y" }}</small>}</small>
+        - <small>{{ prompt.created_at|date:"M d, Y" }}</small>
       </li>
     {% empty %}
-      <li>No prompts yet. Click "Add New Prompt" to create your first one.</li>
+      <li>No prompts found.</li>
     {% endfor %}
   </ul>
 </body>
 </html>
-
