@@ -2,23 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Add Prompt</title>
+  <title>{% if editing %}Edit Prompt{% else %}Add Prompt{% endif %}</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    input[type=text], textarea { width: 100%; padding: 8px; margin: 6px 0 16px; box-sizing: border-box; }
+    input[type=text], textarea, select { width: 100%; padding: 8px; margin: 6px 0 16px; box-sizing: border-box; }
     textarea { height: 150px; }
     button { background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; }
     a { color: #2563eb; text-decoration: none; display: inline-block; margin-top: 12px; }
   </style>
 </head>
 <body>
-  <h1>Add Prompt</h1>
+  <h1>{% if editing %}Edit Prompt{% else %}Add Prompt{% endif %}</h1>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save</button>
   </form>
-  <a href="{% url 'prompt_list' %}">â† Back to list</a>
+  <a href="{% url 'prompt_list' %}">Back to list</a>
 </body>
 </html>
-

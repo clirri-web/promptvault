@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Version History - {{ prompt.title }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    pre { white-space: pre-wrap; background: #f5f5f5; padding: 16px; border-radius: 6px; }
+    a { color: #2563eb; text-decoration: none; display: inline-block; margin-top: 12px; }
+    .version { border: 1px solid #eee; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Version History</h1>
+  <p>Current title: <strong>{{ prompt.title }}</strong></p>
+
+  {% for version in versions %}
+    <div class="version">
+      <p><strong>{{ version.title }}</strong> - saved {{ version.saved_at }}</p>
+      <pre>{{ version.text }}</pre>
+    </div>
+  {% empty %}
+    <p>No past versions yet. Versions appear here after you edit this prompt at least once.</p>
+  {% endfor %}
+
+  <a href="{% url 'prompt_detail' prompt.pk %}">Back to prompt</a>
+</body>
+</html>
