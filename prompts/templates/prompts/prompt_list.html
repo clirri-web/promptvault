@@ -12,7 +12,7 @@
     <select name="category" class="form-select" onchange="this.form.submit()">
       <option value="">All categories</option>
       {% for cat in categories %}
-        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>
       {% endfor %}
     </select>
   </div>
@@ -37,7 +37,16 @@
         {% if prompt.is_pinned %}<span title="Pinned">&#128204;</span>{% endif %}
         {% if prompt.is_favorite %}<span class="text-warning">&#9733;</span>{% endif %}
         <a href="{% url 'prompt_detail' prompt.pk %}" class="fw-semibold text-decoration-none">{{ prompt.title }}</a>
-        {% if prompt.category %}<span class="badge bg-light text-dark tag ms-2">{{ prompt.category.name }}</span>{% endif %}
+        {% if prompt.category %}
+          <span class="badge tag ms-2" style="background-color: {{ prompt.category.color }}; color: white;">
+            {{ prompt.category.icon }} {{ prompt.category.name }}
+          </span>
+        {% endif %}
+        {% if prompt.ai_model %}<span class="badge bg-info text-dark tag ms-1">{{ prompt.get_ai_model_display }}</span>{% endif %}
+        {% if prompt.rating %}<span class="badge bg-warning text-dark tag ms-1">{{ prompt.rating }}&#9733;</span>{% endif %}
+        {% for t in prompt.tags.all %}
+          <span class="badge tag ms-1" style="background-color: {{ t.color }}; color: white;">{{ t.name }}</span>
+        {% endfor %}
         <small class="text-muted ms-2">{{ prompt.created_at|date:"M d, Y" }}</small>
       </div>
     </div>

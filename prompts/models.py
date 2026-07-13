@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    color = models.CharField(max_length=7, default='#6c757d')
+    icon = models.CharField(max_length=10, blank=True, default='')
 
     class Meta:
         verbose_name_plural = "categories"
@@ -13,12 +15,36 @@ class Category(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    color = models.CharField(max_length=7, default='#6c757d')
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+AI_MODEL_CHOICES = [
+    ('', 'Not specified'),
+    ('claude', 'Claude'),
+    ('chatgpt', 'ChatGPT'),
+    ('gemini', 'Gemini'),
+    ('other', 'Other / Local'),
+]
+
+
 class Prompt(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='prompts'
     )
+    tags = models.ManyToManyField(Tag, blank=True, related_name='prompts')
+    ai_model = models.CharField(max_length=20, choices=AI_MODEL_CHOICES, blank=True, default='')
+    rating = models.PositiveSmallIntegerField(default=0)
+    is_template = models.BooleanField(default=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     is_favorite = models.BooleanField(default=False)
     is_public = models.BooleanField(default=False)
@@ -60,6 +86,7 @@ class Note(models.Model):
 class Share(models.Model):
     prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name='shares')
     shared_with = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shared_prompts')
+    can_edit = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -67,3 +94,17 @@ class Share(models.Model):
 
     def __str__(self):
         return "%s shared with %s" % (self.prompt.title, self.shared_with.username)
+
+
+class Attachment(models.Model):
+    prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name='attachments')
+    file = models.FileField(upload_to='attachments/%Y/%m/', blank=True, null=True)
+    link = models.URLField(blank=True)
+    label = models.CharField(max_length=200, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return self.label or (self.file.name if self.file else self.link)

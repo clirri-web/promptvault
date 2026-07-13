@@ -1,14 +1,18 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Version History{% endblock %}
 {% block content %}
 
 <h1 class="mb-3">Version History</h1>
 <p>Current title: <strong>{{ prompt.title }}</strong></p>
+<p class="text-muted"><small>Restoring a version brings back its title, text, and category (tags/rating/AI model are not affected). The current version is saved as a new history entry before restoring, so nothing is ever lost.</small></p>
 
 {% for version in versions %}
   <div class="card mb-3">
     <div class="card-body">
-      <h6 class="card-subtitle mb-2 text-muted">{{ version.title }} - saved {{ version.saved_at }}</h6>
+      <div class="d-flex justify-content-between align-items-start">
+        <h6 class="card-subtitle mb-2 text-muted">{{ version.title }} - saved {{ version.saved_at }}</h6>
+        <a href="{% url 'prompt_version_restore' prompt.pk version.pk %}" class="btn btn-outline-primary btn-sm" onclick="return confirm('Restore this version? Your current version will be saved to history first.')">Restore this version</a>
+      </div>
       <pre class="prompt-text">{{ version.text }}</pre>
     </div>
   </div>

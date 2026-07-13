@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Use Template - {{ prompt.title }}{% endblock %}
+{% block content %}
+
+<h1 class="mb-3">Use Template: {{ prompt.title }}</h1>
+
+{% if variables %}
+  <p class="text-muted">Fill in the values below, then click Generate.</p>
+  <form method="post" class="card card-body mb-4">
+    {% csrf_token %}
+    {% for var in variables %}
+      <div class="mb-3">
+        <label class="form-label">{{ var }}</label>
+        <input type="text" name="{{ var }}" class="form-control">
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Generate</button>
+  </form>
+{% else %}
+  <p class="text-muted">This template has no {{ '{{variable}}' }} placeholders - the text below is used as-is.</p>
+{% endif %}
+
+{% if filled_text %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Result</h5>
+      <pre class="prompt-text" id="resultText">{{ filled_text }}</pre>
+      <button class="btn btn-outline-primary btn-sm" onclick="copyResult()">Copy to clipboard</button>
+      <span id="copiedMsg" class="text-success ms-2" style="display:none;">Copied!</span>
+    </div>
+  </div>
+{% endif %}
+
+<a href="{% url 'prompt_detail' prompt.pk %}" class="btn btn-outline-secondary mt-3">Back to prompt</a>
+
+<script>
+  function copyResult() {
+    var text = document.getElementById('resultText').innerText;
+    navigator.clipboard.writeText(text).then(function () {
+      var msg = document.getElementById('copiedMsg');
+      msg.style.display = 'inline';
+      setTimeout(function () { msg.style.display = 'none'; }, 2000);
+    });
+  }
+</script>
+
+{% endblock %}

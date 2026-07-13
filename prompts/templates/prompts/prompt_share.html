@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Share {{ prompt.title }}{% endblock %}
 {% block content %}
 
@@ -25,14 +25,18 @@
 <div class="card mb-4">
   <div class="card-body">
     <h5 class="card-title">Share with a specific person</h5>
-    <form method="post" class="row g-2">
+    <form method="post" class="row g-2 align-items-center">
       {% csrf_token %}
       <input type="hidden" name="action" value="add_user">
       <div class="col-auto">
         <input type="text" name="username" class="form-control" placeholder="Their username">
       </div>
+      <div class="col-auto form-check">
+        <input type="checkbox" class="form-check-input" name="can_edit" id="canEditCheck">
+        <label class="form-check-label" for="canEditCheck">Allow editing (Editor), otherwise view-only</label>
+      </div>
       <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Share (view-only)</button>
+        <button type="submit" class="btn btn-primary">Share</button>
       </div>
     </form>
 
@@ -41,13 +45,30 @@
     <h6>Currently shared with:</h6>
     {% for share in shares %}
       <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-        <span>{{ share.shared_with.username }}</span>
-        <form method="post">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="remove_user">
-          <input type="hidden" name="share_id" value="{{ share.id }}">
-          <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
-        </form>
+        <span>
+          {{ share.shared_with.username }}
+          {% if share.can_edit %}
+            <span class="badge bg-primary ms-2">Editor</span>
+          {% else %}
+            <span class="badge bg-secondary ms-2">Viewer</span>
+          {% endif %}
+        </span>
+        <div>
+          <form method="post" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="toggle_edit">
+            <input type="hidden" name="share_id" value="{{ share.id }}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+              {% if share.can_edit %}Make Viewer{% else %}Make Editor{% endif %}
+            </button>
+          </form>
+          <form method="post" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove_user">
+            <input type="hidden" name="share_id" value="{{ share.id }}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+          </form>
+        </div>
       </div>
     {% empty %}
       <p class="text-muted">Not shared with anyone specifically yet.</p>
